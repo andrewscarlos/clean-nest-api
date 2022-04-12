@@ -1,10 +1,14 @@
+import { Inject, Injectable } from "@nestjs/common";
 import { User } from "../entities/user";
 import { UserRepositoryInterface } from "../interfaces/user-repository.interface";
 import { UserMongoRepository } from "./user-mongo-repository";
 
-
+@Injectable()
 export class UserMongoRepositoryAdapter implements UserRepositoryInterface {
-  constructor(private readonly userMongoRepository: UserMongoRepository) {}
+  constructor(
+    @Inject(UserMongoRepository)
+    private readonly userMongoRepository: UserMongoRepository
+  ) {}
 
   async getAll(): Promise<User[]> {
     const mongoseUsers = await this.userMongoRepository.getAll();
@@ -27,7 +31,7 @@ export class UserMongoRepositoryAdapter implements UserRepositoryInterface {
     return await this.userMongoRepository.update(user);
   }
 
-  async delete(id: string){
+  async delete(id: string) {
     return await this.userMongoRepository.delete(id);
   }
 }

@@ -1,12 +1,17 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from '@nestjs/common';
 import { User } from "./entities/user";
-import { UserRepositoryInterface } from "./interfaces/user-repository.interface";
 import { UserServiceInterface } from "./interfaces/user-service.interface";
 import { v4 as uuidv4 } from "uuid";
 import { CreateUserDto } from "./dtos/create-user.dto";
+import { UserRepositoryInterface } from './interfaces/user-repository.interface';
+
 @Injectable()
 export class UsersService implements UserServiceInterface {
-  constructor(protected readonly userRepository: UserRepositoryInterface) {}
+
+  constructor(
+    @Inject('UserRepositoryInterface')
+    private readonly userRepository: UserRepositoryInterface,
+  ) {}
 
   async getAll(): Promise<User[]> {
     try {
@@ -36,7 +41,21 @@ export class UsersService implements UserServiceInterface {
     }
   }
 
-  async update(): Promise<User> {}
+  async update(user: CreateUserDto): Promise<User> {
+    try {
+      const newUser = new User();
+      Object.assign(newUser, user);
+      return this.userRepository.update(newUser);
+    } catch (err) {
+      return err;
+    }
+  }
 
-  async delete(id: string) {}
+  async delete(id: string) {
+    try {
+      return this.userRepository.delete(id);
+    } catch (err) {
+      return err;
+    }
+  }
 }
