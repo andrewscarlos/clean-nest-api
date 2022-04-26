@@ -4,6 +4,7 @@ import { UserServiceInterface } from "./interfaces/user-service.interface";
 import { v4 as uuidv4 } from "uuid";
 import { CreateUserDto } from "./dtos/create-user.dto";
 import { UserRepositoryInterface } from './interfaces/user-repository.interface';
+import { generateOrderId } from './utils';
 
 @Injectable()
 export class UsersService implements UserServiceInterface {
@@ -32,9 +33,9 @@ export class UsersService implements UserServiceInterface {
   async create(user: CreateUserDto): Promise<User> {
     try {
       const newUser = new User();
-      newUser.id = uuidv4();
+      newUser.id = generateOrderId()
       Object.assign(newUser, user);
-      await this.userRepository.create(newUser);
+      const response = await this.userRepository.create(newUser);
       return newUser;
     } catch (err) {
       return err;

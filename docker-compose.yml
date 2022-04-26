@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  mongo_database:
+    image: mongo:3.2.3
+    container_name: mongo_database
+    restart: always
+    ports:
+      - 27017:27017
+  postgres_database:
+    image: postgres
+    container_name: postgres_database
+    restart: always
+    ports:
+      - 5440:5440
+    environment:
+      - POSTGRES_USER=nest
+      - POSTGRES_PASSWORD=nest
+      - POSTGRES_DB=nest
+    volumes:
+      - pgdata:/data/postgres
+  app:
+    build: .
+    container_name: nest-api
+    ports:
+      - 3000:3000
+    volumes: 
+      - .:/usr/app
+    links: 
+      - postgres_database
+      - mongo_database
+    depends_on:
+      - postgres_database
+      - mongo_database
+
+volumes:
+  pgdata:
+    driver: local
